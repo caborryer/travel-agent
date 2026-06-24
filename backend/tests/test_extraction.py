@@ -77,5 +77,25 @@ class TestDestinationExtraction(unittest.TestCase):
         )
 
 
+class TestSettings(unittest.TestCase):
+    def test_cors_origins_single_url(self):
+        from app.config import Settings
+
+        settings = Settings(cors_origins="https://travel-agent.vercel.app")
+        self.assertEqual(settings.cors_origins, ["https://travel-agent.vercel.app"])
+
+    def test_cors_origins_json_array(self):
+        from app.config import Settings
+
+        settings = Settings(cors_origins='["https://a.vercel.app","https://b.vercel.app"]')
+        self.assertEqual(settings.cors_origins, ["https://a.vercel.app", "https://b.vercel.app"])
+
+    def test_cors_origins_comma_separated(self):
+        from app.config import Settings
+
+        settings = Settings(cors_origins="https://a.vercel.app, https://b.vercel.app")
+        self.assertEqual(settings.cors_origins, ["https://a.vercel.app", "https://b.vercel.app"])
+
+
 if __name__ == "__main__":
     unittest.main()
