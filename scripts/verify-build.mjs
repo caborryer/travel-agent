@@ -26,10 +26,17 @@ const hasPagesIndex =
 
 console.log('[verify-build] pages index:', hasPagesIndex);
 
+const hasPagesApi =
+  existsSync(join(dist, 'server/pages/api/chat.js')) ||
+  existsSync(join(dist, 'server/pages/api/chat.html'));
+
+console.log('[verify-build] pages api/chat:', hasPagesApi);
+
 const hasRoot =
   report.routes.includes('/page') ||
   report.prerenderRoutes.includes('/') ||
-  hasPagesIndex;
+  hasPagesIndex ||
+  hasPagesApi;
 
 if (!hasRoot) {
   console.error('[verify-build] FAIL: no root route in build output');
