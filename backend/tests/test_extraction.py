@@ -4,7 +4,9 @@ from unittest import mock
 from app.agent.nodes import (
     _destination_matches_text,
     _extract_destination_regex,
+    _extract_origin_regex,
     _is_grounded_in_sources,
+    _is_valid_destination_name,
     _parse_price,
     _price_appears_in_text,
     _sanitize_destination,
@@ -23,6 +25,18 @@ class TestDestinationExtraction(unittest.TestCase):
     def test_sanitize_strips_prepositions(self):
         self.assertEqual(_sanitize_destination("CANCUN CON"), "Cancun")
         self.assertEqual(_sanitize_destination("Madrid de"), "Madrid")
+        self.assertEqual(_sanitize_destination("con un presupuesto de"), "")
+
+    def test_colombia_budget_no_false_destination(self):
+        msg = "quiero viajar desde colombia con un presupuesto de 1000 usd"
+        self.assertIsNone(_extract_destination_regex(msg))
+        self.assertEqual(_extract_origin_regex(msg), "Colombia")
+        self.assertFalse(_is_valid_destination_name("Con Un Presupuesto De"))
+
+    def test_colombia_a_does_not_match_preposition(self):
+        msg = "viajar desde colombia a cancun"
+        self.assertEqual(_extract_destination_regex(msg), "Cancun")
+        self.assertEqual(_extract_origin_regex(msg), "Colombia")
 
     def test_destination_matches_primary_token(self):
         text = "Cheap flights to Cancún from NYC"

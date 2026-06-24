@@ -33,26 +33,6 @@ export default async function handler(
       });
     }
 
-    // #region agent log
-    fetch('http://127.0.0.1:7659/ingest/0d5509eb-d124-40cc-804a-9d903d6a96c6', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': 'df77db'},
-      body: JSON.stringify({
-        sessionId: 'df77db',
-        runId: 'chat-api',
-        hypothesisId: 'H-API',
-        location: 'pages/api/chat.ts:handler',
-        message: 'proxying chat to backend',
-        data: {
-          backendUrl: BACKEND_URL,
-          vercel: process.env.VERCEL === '1',
-          messageLength: parsed.data.message.length,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
-
     const backendRes = await fetch(`${BACKEND_URL}/chat`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},

@@ -80,8 +80,36 @@ def _sanitize_destination(name: str) -> str:
             break
         clean.append(word)
     if not clean:
-        return name.strip().title()
+        return ""
     return " ".join(w.capitalize() for w in clean)
+
+
+def _is_valid_destination_name(name: str) -> bool:
+    sanitized = _sanitize_destination(name)
+    if not sanitized or len(sanitized) < 3:
+        return False
+    words = sanitized.split()
+    if len(words) > 4:
+        return False
+    generic = {
+        "presupuesto", "budget", "viajar", "travel", "quiero", "want",
+        "viaje", "trip", "vuelos", "flights", "destinos", "destinations",
+    }
+    return not all(w.lower() in DEST_STOP_WORDS | generic for w in words)
+
+
+def _extract_origin_regex(message: str) -> str | None:
+    patterns = [
+        r"desde\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
+        r"from\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, message, re.IGNORECASE)
+        if match:
+            sanitized = _sanitize_destination(match.group(1).strip())
+            if sanitized and len(sanitized) >= 3:
+                return sanitized
+    return None
 
 
 def _extract_destination_regex(message: str) -> str | None:
@@ -89,13 +117,18 @@ def _extract_destination_regex(message: str) -> str | None:
     patterns = [
         r"(?:quiero\s+)?(?:viajar|ir|travel|visit)\s+(?:a|to)\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
         r"^([A-Za-zÀ-ÿ]+)\s+\d+\s*(?:d[ií]as?|days?)",
-        r"(?:a|para|visitar|visit|to)\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
+        r"(?<![a-zà-ÿ])a\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
+        r"(?:para|visitar|visit|to)\s+([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)",
     ]
     for pattern in patterns:
         match = re.search(pattern, message, re.IGNORECASE)
         if match:
             sanitized = _sanitize_destination(match.group(1).strip())
-            if sanitized and _normalize_text(sanitized) not in skip_leading:
+            if (
+                sanitized
+                and _normalize_text(sanitized) not in skip_leading
+                and _is_valid_destination_name(sanitized)
+            ):
                 return sanitized
     return None
 
@@ -115,7 +148,10 @@ def _finalize_destination_preference(preferences: dict, message: str) -> dict:
     if regex_dest:
         preferences["desired_destination"] = regex_dest
     elif preferences.get("desired_destination"):
-        preferences["desired_destination"] = _sanitize_destination(preferences["desired_destination"])
+        sanitized = _sanitize_destination(preferences["desired_destination"])
+        preferences["desired_destination"] = (
+            sanitized if _is_valid_destination_name(sanitized) else None
+        )
     else:
         preferences["desired_destination"] = None
     return preferences
@@ -143,6 +179,10 @@ def _extract_duration_regex(message: str) -> str | None:
 
 
 def _enrich_preferences_from_message(preferences: dict, message: str) -> dict:
+    if not preferences.get("origin"):
+        origin = _extract_origin_regex(message)
+        if origin:
+            preferences["origin"] = origin
     if not preferences.get("budget"):
         budget = _extract_budget_regex(message)
         if budget:
@@ -590,7 +630,7 @@ def generate_response(state: AgentState) -> dict:
 
     def _looks_valid(dest: dict) -> bool:
         name = dest.get("name", "")
-        if not name or len(name) < 3 or len(name) > 40:
+        if not name or len(name) > 40 or not _is_valid_destination_name(name):
             return False
         price_num, _ = _parse_price(dest.get("estimated_price", ""))
         if price_num is not None and 2020 <= price_num <= 2040:
@@ -610,10 +650,21 @@ def generate_response(state: AgentState) -> dict:
 
     shown = in_budget[:7]
 
+    origin = prefs.get("origin", "")
+
     if not shown:
         if desired_dest:
             msg_es = f"No encontré información específica sobre {desired_dest} dentro de tu presupuesto{budget_info}. ¿Quieres probar con otro destino o ajustar el presupuesto?"
             msg_en = f"I couldn't find specific information about {desired_dest} within your budget{budget_info}. Want to try another destination or adjust your budget?"
+        elif origin and budget_value:
+            msg_es = (
+                f"No encontré destinos concretos desde {origin} dentro de tu presupuesto{budget_info}. "
+                "¿Tienes algún destino en mente o prefieres que te sugiera opciones?"
+            )
+            msg_en = (
+                f"I couldn't find specific destinations from {origin} within your budget{budget_info}. "
+                "Do you have a destination in mind, or would you like suggestions?"
+            )
         else:
             msg_es = "Lo siento, no pude encontrar destinos low-cost con esa información. ¿Puedes darme más detalles como ciudad de origen, fechas o presupuesto?"
             msg_en = "Sorry, I couldn't find low-cost destinations with that information. Can you provide more details like your origin city, dates, or budget?"

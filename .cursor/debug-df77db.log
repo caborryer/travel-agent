@@ -1,1 +1,0 @@
-{"sessionId":"df77db","runId":"chat-api","hypothesisId":"H-API","location":"pages/api/chat.ts:handler","message":"proxying chat to backend","data":{"backendUrl":"http://localhost:8000","vercel":false,"messageLength":4},"timestamp":1782319733187}
