@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 
 from app.agent.nodes import (
     _destination_matches_text,
@@ -82,19 +83,26 @@ class TestSettings(unittest.TestCase):
         from app.config import Settings
 
         settings = Settings(cors_origins="https://travel-agent.vercel.app")
-        self.assertEqual(settings.cors_origins, ["https://travel-agent.vercel.app"])
+        self.assertEqual(settings.cors_origins_list, ["https://travel-agent.vercel.app"])
 
     def test_cors_origins_json_array(self):
         from app.config import Settings
 
         settings = Settings(cors_origins='["https://a.vercel.app","https://b.vercel.app"]')
-        self.assertEqual(settings.cors_origins, ["https://a.vercel.app", "https://b.vercel.app"])
+        self.assertEqual(settings.cors_origins_list, ["https://a.vercel.app", "https://b.vercel.app"])
 
     def test_cors_origins_comma_separated(self):
         from app.config import Settings
 
         settings = Settings(cors_origins="https://a.vercel.app, https://b.vercel.app")
-        self.assertEqual(settings.cors_origins, ["https://a.vercel.app", "https://b.vercel.app"])
+        self.assertEqual(settings.cors_origins_list, ["https://a.vercel.app", "https://b.vercel.app"])
+
+    def test_cors_origins_from_env(self):
+        from app.config import Settings
+
+        with mock.patch.dict("os.environ", {"CORS_ORIGINS": "https://prod.vercel.app"}, clear=False):
+            settings = Settings()
+            self.assertEqual(settings.cors_origins_list, ["https://prod.vercel.app"])
 
 
 if __name__ == "__main__":
