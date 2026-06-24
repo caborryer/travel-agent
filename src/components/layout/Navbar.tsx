@@ -1,19 +1,19 @@
 'use client';
 
 import {useLocale} from 'next-intl';
-import {usePathname, useRouter} from '@/i18n/navigation';
+import {useRouter} from 'next/navigation';
 import {useTransition} from 'react';
 
 export function Navbar() {
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
   const toggleLocale = () => {
     const next = locale === 'es' ? 'en' : 'es';
+    document.cookie = `NEXT_LOCALE=${next};path=/;SameSite=Lax`;
     startTransition(() => {
-      router.replace(pathname, {locale: next});
+      router.refresh();
     });
   };
 

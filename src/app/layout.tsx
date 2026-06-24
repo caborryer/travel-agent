@@ -1,8 +1,9 @@
+import type {ReactNode} from 'react';
 import {NextIntlClientProvider} from 'next-intl';
-import {getMessages, getLocale} from 'next-intl/server';
+import {getLocale, getMessages} from 'next-intl/server';
 import {Geist, Geist_Mono} from 'next/font/google';
 import type {Metadata} from 'next';
-import '../globals.css';
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -19,7 +20,11 @@ export const metadata: Metadata = {
   description: 'Tu asistente de viajes low-cost',
 };
 
-export default async function LocaleLayout({children}: {children: React.ReactNode}) {
+type Props = {
+  children: ReactNode;
+};
+
+export default async function RootLayout({children}: Props) {
   const locale = await getLocale();
   const messages = await getMessages();
 

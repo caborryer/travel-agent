@@ -1,9 +1,7 @@
 'use client';
 
 import {useState, useRef, useEffect} from 'react';
-import {useTranslations} from 'next-intl';
-import {useLocale} from 'next-intl';
-import {useRouter, usePathname} from '@/i18n/navigation';
+import {useTranslations, useLocale} from 'next-intl';
 import {ChatMessage} from '@/components/chat/ChatMessage';
 import {ChatInput} from '@/components/chat/ChatInput';
 import {DestinationCard} from '@/components/destinations/DestinationCard';
@@ -30,11 +28,9 @@ interface Message {
   destinations?: Destination[];
 }
 
-export default function Home() {
+export default function HomePage() {
   const t = useTranslations('Index');
   const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const [messages, setMessages] = useState<Message[]>([
     {

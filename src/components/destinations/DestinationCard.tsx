@@ -33,26 +33,6 @@ export function DestinationCard({destination}: DestinationProps) {
   const d = destination;
   const sourceUrl = isValidSourceUrl(d.source) ? d.source : null;
 
-  // #region agent log
-  if (typeof window !== 'undefined' && sourceUrl) {
-    fetch('http://127.0.0.1:7659/ingest/0d5509eb-d124-40cc-804a-9d903d6a96c6', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': 'df77db'},
-      body: JSON.stringify({
-        sessionId: 'df77db',
-        hypothesisId: 'H2',
-        location: 'DestinationCard.tsx',
-        message: 'card render with source url',
-        data: {
-          hasOpenSourceKey: typeof t.has === 'function' ? t.has('openSource') : null,
-          hasOpenSourceForKey: typeof t.has === 'function' ? t.has('openSourceFor') : null,
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  }
-  // #endregion
-
   const scoreColors: Record<number, string> = {
     5: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
     4: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
