@@ -1,7 +1,11 @@
 import {NextRequest, NextResponse} from 'next/server';
 import {z} from 'zod';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+const PRODUCTION_BACKEND_URL = 'https://travel-agent-7007.onrender.com';
+
+const BACKEND_URL =
+  process.env.BACKEND_URL ||
+  (process.env.VERCEL === '1' ? PRODUCTION_BACKEND_URL : 'http://localhost:8000');
 
 const ChatRequestSchema = z.object({
   message: z
