@@ -2,9 +2,13 @@ services:
   - type: web
     name: travel-agent-api
     runtime: python
+    # Option A: set rootDir to backend (preferred)
     rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # Option B: if rootDir is repo root, use instead:
+    # buildCommand: pip install -r requirements.txt
+    # startCommand: bash render-start.sh
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
