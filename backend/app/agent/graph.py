@@ -43,6 +43,7 @@ async def run_agent(user_message: str, session_id: str) -> AgentState:
             "duration": None,
             "interests": [],
             "travel_style": None,
+            "desired_destination": None,
         },
         "search_queries": [],
         "search_results": [],

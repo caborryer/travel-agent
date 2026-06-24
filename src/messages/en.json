@@ -17,6 +17,8 @@
     "footer": "Travel Agent — Your budget travel assistant",
     "heroTitle": "Travel Agent",
     "heroTagline": "Your intelligent assistant for affordable travel",
-    "source": "Source"
+    "source": "Source",
+    "openSource": "View source →",
+    "openSourceFor": "View source for {name}"
   }
 }

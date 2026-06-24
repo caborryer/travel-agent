@@ -9,6 +9,7 @@ class TravelPreferences(TypedDict):
     duration: Optional[str]
     interests: list[str]
     travel_style: Optional[str]
+    desired_destination: Optional[str]
 
 
 Destination = dict

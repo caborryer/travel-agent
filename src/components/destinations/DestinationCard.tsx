@@ -24,9 +24,34 @@ interface DestinationProps {
   };
 }
 
+function isValidSourceUrl(url: string | undefined): url is string {
+  return Boolean(url?.startsWith('http://') || url?.startsWith('https://'));
+}
+
 export function DestinationCard({destination}: DestinationProps) {
   const t = useTranslations('Index');
   const d = destination;
+  const sourceUrl = isValidSourceUrl(d.source) ? d.source : null;
+
+  // #region agent log
+  if (typeof window !== 'undefined' && sourceUrl) {
+    fetch('http://127.0.0.1:7659/ingest/0d5509eb-d124-40cc-804a-9d903d6a96c6', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-Debug-Session-Id': 'df77db'},
+      body: JSON.stringify({
+        sessionId: 'df77db',
+        hypothesisId: 'H2',
+        location: 'DestinationCard.tsx',
+        message: 'card render with source url',
+        data: {
+          hasOpenSourceKey: typeof t.has === 'function' ? t.has('openSource') : null,
+          hasOpenSourceForKey: typeof t.has === 'function' ? t.has('openSourceFor') : null,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+  }
+  // #endregion
 
   const scoreColors: Record<number, string> = {
     5: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
@@ -36,7 +61,7 @@ export function DestinationCard({destination}: DestinationProps) {
     1: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
   };
 
-  return (
+  const card = (
     <Card className="group border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
@@ -99,11 +124,27 @@ export function DestinationCard({destination}: DestinationProps) {
         )}
       </CardContent>
       <CardFooter className="pt-0 pb-3">
-        <p className="text-[10px] text-zinc-400 dark:text-zinc-500">
-          {t('source')}: {d.source?.slice(0, 40)}
-          {d.source?.length > 40 ? '…' : ''}
+        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+          {sourceUrl ? t('openSource') : `${t('source')}: ${d.source?.slice(0, 40) ?? ''}`}
+          {!sourceUrl && (d.source?.length ?? 0) > 40 ? '…' : ''}
         </p>
       </CardFooter>
     </Card>
+  );
+
+  if (!sourceUrl) {
+    return card;
+  }
+
+  return (
+    <a
+      href={sourceUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block no-underline text-inherit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-xl"
+      aria-label={t('openSourceFor', {name: d.name})}
+    >
+      {card}
+    </a>
   );
 }

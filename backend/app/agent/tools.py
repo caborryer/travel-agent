@@ -30,9 +30,58 @@ async def scrape_url(url: str, max_chars: int = 3000) -> Optional[str]:
         return None
 
 
-def generate_search_queries(origin: str, dates: str, budget: str, interests: list[str], language: str) -> list[str]:
+def generate_search_queries(
+    origin: str, dates: str, budget: str,
+    interests: list[str], language: str,
+    desired_destination: str = "",
+    duration: str = "",
+) -> list[str]:
     queries = []
     lang = language if language in ("es", "en") else "en"
+    b = budget.replace("€", "euros").replace("$", "dollars") if budget else ""
+
+    if desired_destination:
+        d = desired_destination
+        if lang == "en":
+            queries.extend([
+                f"cheap flights to {d} from {origin} {dates} 2026" if origin else f"cheap flights to {d} {dates} 2026",
+                f"budget travel to {d} {dates} 2026",
+                f"how to visit {d} on a budget {dates} 2026",
+                f"cost of traveling to {d} {dates} 2026",
+                f"{d} travel guide budget {dates} 2026",
+                f"cheap accommodation {d} {dates} 2026",
+                f"{d} trip cost low budget 2026",
+            ])
+        else:
+            queries.extend([
+                f"vuelos baratos a {d} desde {origin} {dates} 2026" if origin else f"vuelos baratos a {d} {dates} 2026",
+                f"viajar a {d} barato {dates} 2026",
+                f"presupuesto para viajar a {d} {dates} 2026",
+                f"cuanto cuesta viajar a {d} {dates} 2026",
+                f"{d} viaje económico {dates} 2026",
+                f"alojamiento barato {d} {dates} 2026",
+                f"consejos viaje {d} low cost {dates} 2026",
+            ])
+
+        if duration and b:
+            if lang == "en":
+                queries.append(f"travel to {d} {duration} under {b} 2026")
+            else:
+                queries.append(f"viajar a {d} {duration} presupuesto {b} 2026")
+        elif duration:
+            if lang == "en":
+                queries.append(f"{d} trip {duration} budget 2026")
+            else:
+                queries.append(f"viajar a {d} {duration} barato 2026")
+        elif b:
+            if lang == "en":
+                queries.append(f"visit {d} on a budget {b} 2026")
+                queries.append(f"how much does it cost to travel to {d} {b} 2026")
+            else:
+                queries.append(f"viajar a {d} presupuesto {b} 2026")
+                queries.append(f"cuanto cuesta viajar a {d} {b} 2026")
+
+        return queries
 
     if lang == "en":
         queries.extend([
@@ -54,9 +103,10 @@ def generate_search_queries(origin: str, dates: str, budget: str, interests: lis
         queries.append(f"{'travel' if lang == 'en' else 'viajes'} {interest_query} budget {dates} 2026")
 
     if budget:
-        queries.append(f"vacation under {budget} {'euros' if lang == 'en' else 'euros'} {dates} 2026")
+        queries.append(f"vacation under {b} {dates} 2026" if lang == "en" else f"vacaciones por menos de {b} {dates} 2026")
 
-    queries.append(f"cheap weekend getaways from {origin} {dates} 2026" if lang == "en" else f"escapadas baratas desde {origin} {dates} 2026")
+    if origin:
+        queries.append(f"cheap weekend getaways from {origin} {dates} 2026" if lang == "en" else f"escapadas baratas desde {origin} {dates} 2026")
 
     queries.extend([
         "secret flying deals europe 2026",
