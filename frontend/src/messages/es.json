@@ -1,0 +1,22 @@
+{
+  "Index": {
+    "title": "Descubre tu próximo destino low-cost",
+    "subtitle": "Encuentra los mejores destinos económicos para tu próximo viaje",
+    "chatPlaceholder": "Ej: Quiero viajar 4 días desde Madrid en septiembre con 300€",
+    "chatSend": "Enviar",
+    "chatThinking": "Buscando los mejores destinos low-cost...",
+    "chatError": "Lo siento, hubo un error al procesar tu solicitud. Intenta de nuevo.",
+    "startExample": "¡Empieza a escribir!",
+    "valueScore": "Valor",
+    "estimatedPrice": "Precio estimado",
+    "bestSeason": "Mejor época",
+    "activities": "Actividades",
+    "whyLowCost": "Por qué es low-cost",
+    "refinePrompt": "¿Te interesa algún destino? Puedo refinar la búsqueda.",
+    "languageToggle": "English",
+    "footer": "Travel Agent — Tu asistente de viajes low-cost",
+    "heroTitle": "Travel Agent",
+    "heroTagline": "Tu asistente inteligente para viajes económicos",
+    "source": "Fuente"
+  }
+}

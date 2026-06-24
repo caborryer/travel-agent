@@ -1,0 +1,22 @@
+{
+  "Index": {
+    "title": "Discover your next low-cost destination",
+    "subtitle": "Find the best budget destinations for your next trip",
+    "chatPlaceholder": "E.g.: I want to travel 4 days from Madrid in September with 300€",
+    "chatSend": "Send",
+    "chatThinking": "Searching for the best low-cost destinations...",
+    "chatError": "Sorry, there was an error processing your request. Try again.",
+    "startExample": "Start typing!",
+    "valueScore": "Value",
+    "estimatedPrice": "Estimated Price",
+    "bestSeason": "Best Season",
+    "activities": "Activities",
+    "whyLowCost": "Why it's low-cost",
+    "refinePrompt": "Interested in any destination? I can refine the search.",
+    "languageToggle": "Español",
+    "footer": "Travel Agent — Your budget travel assistant",
+    "heroTitle": "Travel Agent",
+    "heroTagline": "Your intelligent assistant for affordable travel",
+    "source": "Source"
+  }
+}
