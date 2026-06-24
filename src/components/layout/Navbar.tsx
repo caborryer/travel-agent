@@ -1,20 +1,14 @@
 'use client';
 
 import {useLocale} from 'next-intl';
-import {useRouter} from 'next/navigation';
-import {useTransition} from 'react';
 
 export function Navbar() {
   const locale = useLocale();
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
   const toggleLocale = () => {
     const next = locale === 'es' ? 'en' : 'es';
     document.cookie = `NEXT_LOCALE=${next};path=/;SameSite=Lax`;
-    startTransition(() => {
-      router.refresh();
-    });
+    window.dispatchEvent(new CustomEvent('travel-agent:locale', {detail: next}));
   };
 
   return (
@@ -30,7 +24,6 @@ export function Navbar() {
         </div>
         <button
           onClick={toggleLocale}
-          disabled={isPending}
           className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200 cursor-pointer"
         >
           {locale === 'es' ? 'English' : 'Español'}
