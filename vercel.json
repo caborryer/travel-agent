@@ -1,7 +1,5 @@
 {
   "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
   "env": {
     "BACKEND_URL": "https://travel-agent-7007.onrender.com"
   }
